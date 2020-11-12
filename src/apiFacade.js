@@ -12,6 +12,7 @@ function apiFacade() {
   const setToken = (token) => {
     localStorage.setItem("jwtToken", token);
   };
+
   const getToken = () => {
     return localStorage.getItem("jwtToken");
   };
@@ -36,24 +37,31 @@ function apiFacade() {
         setToken(res.token);
       });
   };
-  const fetchData = () => {
-    const options = makeOptions("GET", true); //True add's the token
 
+  const getRole = () => {
     let myToken = getToken();
     let tokenData = myToken.split(".")[1];
     let decoedeJsonData = window.atob(tokenData);
     let decodedJwtData = JSON.parse(decoedeJsonData);
     let role = decodedJwtData.roles;
+    console.log(role);
+
+    return role;
+  };
+
+  const fetchData = () => {
+    const options = makeOptions("GET", true); //True add's the token
+
+    let role = getRole();
 
     return fetch(URL + "/api/info/" + role, options).then(handleHttpErrors);
   };
 
-  const fetchStarwars=() =>{
+  const fetchStarwars = () => {
     const options = makeOptions("GET");
 
-
-    return fetch(URL+ "/api/info/parrallel/", options).then(handleHttpErrors)
-  }
+    return fetch(URL + "/api/info/parrallel/", options).then(handleHttpErrors);
+  };
   const makeOptions = (method, addToken, body) => {
     var opts = {
       method: method,
@@ -78,8 +86,10 @@ function apiFacade() {
     login,
     logout,
     fetchData,
-    fetchStarwars
+    fetchStarwars,
+    getRole
   };
 }
+
 const facade = apiFacade();
 export default facade;
