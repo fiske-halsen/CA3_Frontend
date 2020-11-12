@@ -1,4 +1,4 @@
-const URL = "http://localhost:8080/jpareststarter";
+import { URL } from "./settings.js";
 
 function handleHttpErrors(res) {
   if (!res.ok) {
@@ -15,8 +15,10 @@ function apiFacade() {
   const getToken = () => {
     return localStorage.getItem("jwtToken");
   };
+
   const loggedIn = () => {
     const loggedIn = getToken() != null;
+
     return loggedIn;
   };
   const logout = () => {
@@ -36,8 +38,22 @@ function apiFacade() {
   };
   const fetchData = () => {
     const options = makeOptions("GET", true); //True add's the token
-    return fetch(URL + "/api/info/user", options).then(handleHttpErrors);
+
+    let myToken = getToken();
+    let tokenData = myToken.split(".")[1];
+    let decoedeJsonData = window.atob(tokenData);
+    let decodedJwtData = JSON.parse(decoedeJsonData);
+    let role = decodedJwtData.roles;
+
+    return fetch(URL + "/api/info/" + role, options).then(handleHttpErrors);
   };
+
+  const fetchStarwars=() =>{
+    const options = makeOptions("GET");
+
+
+    return fetch(URL+ "/api/info/parrallel/", options).then(handleHttpErrors)
+  }
   const makeOptions = (method, addToken, body) => {
     var opts = {
       method: method,
@@ -62,6 +78,7 @@ function apiFacade() {
     login,
     logout,
     fetchData,
+    fetchStarwars
   };
 }
 const facade = apiFacade();
